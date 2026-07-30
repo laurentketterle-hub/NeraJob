@@ -14,6 +14,7 @@ from nerajob.scrapers.remoteok import RemoteOKScraper
 from nerajob.scrapers.remotive import RemotiveScraper
 from nerajob.scrapers.sample import SampleScraper
 from nerajob.scrapers.smartrecruiters import SmartRecruitersScraper
+from nerajob.scrapers.usajobs import USAJobsScraper
 from nerajob.scrapers.themuse import TheMuseScraper
 from nerajob.scrapers.weworkremotely import WeWorkRemotelyScraper
 
