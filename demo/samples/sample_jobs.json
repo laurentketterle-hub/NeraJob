@@ -1,0 +1,69 @@
+{
+  "jobs": [
+    {
+      "id": "job_001",
+      "title": "Senior Python Backend Developer",
+      "company": "DataFlow Inc",
+      "required_skills": [
+        "Python",
+        "Django",
+        "PostgreSQL",
+        "Docker",
+        "AWS"
+      ],
+      "description": "Build scalable backend services for data processing pipeline."
+    },
+    {
+      "id": "job_002",
+      "title": "Full Stack Developer",
+      "company": "WebStack Co",
+      "required_skills": [
+        "Python",
+        "React",
+        "TypeScript",
+        "PostgreSQL",
+        "Docker"
+      ],
+      "description": "Full stack development for SaaS platform."
+    },
+    {
+      "id": "job_003",
+      "title": "DevOps Engineer",
+      "company": "CloudOps Ltd",
+      "required_skills": [
+        "Docker",
+        "Kubernetes",
+        "AWS",
+        "Terraform",
+        "CI/CD"
+      ],
+      "description": "Manage cloud infrastructure and deployment pipelines."
+    },
+    {
+      "id": "job_004",
+      "title": "Data Engineer",
+      "company": "BigData Systems",
+      "required_skills": [
+        "Python",
+        "Spark",
+        "PostgreSQL",
+        "AWS",
+        "Airflow"
+      ],
+      "description": "Build and maintain data pipelines and ETL processes."
+    },
+    {
+      "id": "job_005",
+      "title": "Frontend Developer",
+      "company": "UI Masters",
+      "required_skills": [
+        "React",
+        "TypeScript",
+        "CSS",
+        "HTML",
+        "Figma"
+      ],
+      "description": "Build responsive web applications with modern frameworks."
+    }
+  ]
+}

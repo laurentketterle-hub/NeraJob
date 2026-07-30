@@ -1,0 +1,29 @@
+{
+  "name": "Jane Developer",
+  "email": "jane@example.com",
+  "summary": "Senior Python developer with 5 years of experience in backend systems and data engineering.",
+  "skills": [
+    "Python",
+    "Django",
+    "FastAPI",
+    "PostgreSQL",
+    "Docker",
+    "AWS",
+    "Redis",
+    "Celery",
+    "Pytest",
+    "Git"
+  ],
+  "experience": [
+    {
+      "title": "Senior Backend Engineer",
+      "company": "TechCorp",
+      "years": 3
+    },
+    {
+      "title": "Backend Developer",
+      "company": "StartupX",
+      "years": 2
+    }
+  ]
+}
