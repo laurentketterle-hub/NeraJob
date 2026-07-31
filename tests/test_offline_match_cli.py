@@ -45,9 +45,16 @@ def test_offline_match_with_files(tmp_path: Path) -> None:
         json.dumps([j.model_dump() for j in jobs]), encoding="utf-8"
     )
 
+    import os, sys
+
+    env = os.environ.copy()
+    src_dir = str(Path(__file__).resolve().parent.parent / "src")
+    existing = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = f"{src_dir}{os.pathsep}{existing}" if existing else src_dir
+
     result = sp.run(
         [
-            "python",
+            sys.executable,
             "-m",
             "nerajob",
             "jobs",
@@ -62,6 +69,7 @@ def test_offline_match_with_files(tmp_path: Path) -> None:
         capture_output=True,
         text=True,
         cwd=Path(__file__).parent.parent,
+        env=env,
     )
     assert result.returncode == 0
     assert "Python Backend Engineer" in result.stdout
