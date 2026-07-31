@@ -389,3 +389,103 @@ class TestUSAJobsScraperLive:
         # Should fall back to offline
         assert len(results) >= 1
         assert results[0].source == "usajobs"
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# CLI tests (absorbed from PR#130 pattern)
+# ══════════════════════════════════════════════════════════════════════════
+
+
+class TestUSAJobsCLI:
+    """Tests for the standalone CLI entry point."""
+
+    def test_cli_list_fixtures(self, capsys):
+        """--list-fixtures prints all offline job fixtures."""
+        from nerajob.scrapers.usajobs import cli
+        import sys
+
+        old = sys.argv
+        sys.argv = ["usajobs", "--list-fixtures"]
+        try:
+            cli()
+        except SystemExit:
+            pass
+        finally:
+            sys.argv = old
+
+        captured = capsys.readouterr()
+        assert "Bundled offline fixtures" in captured.out
+        assert "IT Specialist" in captured.out
+        assert "Research Computer Scientist" in captured.out
+
+    def test_cli_search_offline(self, capsys):
+        """Search via CLI in offline mode returns results."""
+        from nerajob.scrapers.usajobs import cli
+        import sys
+
+        old = sys.argv
+        sys.argv = ["usajobs", "python", "--offline", "--limit", "3"]
+        try:
+            cli()
+        except SystemExit:
+            pass
+        finally:
+            sys.argv = old
+
+        captured = capsys.readouterr()
+        assert "Searching USAJOBS" in captured.out
+        # Should find results matching "python"
+        assert "results found" not in captured.out or "result" in captured.out.lower()
+
+    def test_cli_no_results(self, capsys):
+        """CLI search with unmatched query prints 'No results'."""
+        from nerajob.scrapers.usajobs import cli
+        import sys
+
+        old = sys.argv
+        sys.argv = ["usajobs", "zzz_nonexistent_xyz_123", "--offline"]
+        try:
+            cli()
+        except SystemExit:
+            pass
+        finally:
+            sys.argv = old
+
+        captured = capsys.readouterr()
+        assert "No results found" in captured.out
+
+    def test_cli_help(self, capsys):
+        """CLI --help prints usage."""
+        from nerajob.scrapers.usajobs import cli
+        import sys
+
+        old = sys.argv
+        sys.argv = ["usajobs", "--help"]
+        try:
+            cli()
+        except SystemExit:
+            pass
+        finally:
+            sys.argv = old
+
+        captured = capsys.readouterr()
+        assert "USAJOBS federal job search" in captured.out
+        assert "--location" in captured.out
+        assert "--offline" in captured.out
+
+    def test_cli_default_query_empty(self, capsys):
+        """CLI with no arguments runs with empty query (returns all fixtures)."""
+        from nerajob.scrapers.usajobs import cli
+        import sys
+
+        old = sys.argv
+        sys.argv = ["usajobs", "--offline"]
+        try:
+            cli()
+        except SystemExit:
+            pass
+        finally:
+            sys.argv = old
+
+        captured = capsys.readouterr()
+        assert "Searching USAJOBS" in captured.out
