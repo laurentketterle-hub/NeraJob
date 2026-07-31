@@ -4,8 +4,6 @@ from __future__ import annotations
 import os
 from unittest.mock import patch, MagicMock
 
-import pytest
-
 from nerajob.scrapers.usajobs import UsajobsScraper, _OFFLINE
 
 
