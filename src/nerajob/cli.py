@@ -131,6 +131,30 @@ def profile_preset(
     console.print_json(preset.model_dump_json(indent=2))
 
 
+@profile_app.command("preset-show")
+def profile_preset_show() -> None:
+    """Display current scan preset."""
+    preset = load_scan_preset()
+    table = Table(title="Current Scan Preset")
+    table.add_column("Setting")
+    table.add_column("Value")
+    table.add_row("Remote Only", str(preset.remote_only))
+    table.add_row("Skill Filters", ", ".join(preset.skill_filters) if preset.skill_filters else "(none)")
+    table.add_row("Min Score", str(preset.min_score))
+    table.add_row("Min Salary", f"USD {preset.min_salary:,}" if preset.min_salary > 0 else "(none)")
+    table.add_row("Max Results", str(preset.max_results))
+    console.print(table)
+
+
+@profile_app.command("preset-reset")
+def profile_preset_reset() -> None:
+    """Reset scan preset to factory defaults."""
+    default = ScanPreset()
+    save_scan_preset(default)
+    console.print("[green]Scan preset reset to defaults.[/green]")
+    console.print_json(default.model_dump_json(indent=2))
+
+
 @app.command("scan")
 def scan_cmd(
     query: str = typer.Option("", "--query", "-q", help="Keywords"),
@@ -468,19 +492,61 @@ def jobs_match(
 
 
 @app_app.command("list")
-def app_list() -> None:
-    """List all applications with status, job_id, created_at."""
+def app_list(
+    status_filter: str | None = typer.Option(
+        None, "--status", "-s",
+        help=f"Filter by status: {sorted(ApplicationPackage.VALID_STATUSES)}",
+    ),
+    sort_by: str = typer.Option(
+        "updated", "--sort-by",
+        help="Sort by: updated, created, status, job_id",
+    ),
+) -> None:
+    """List all applications with status, job_id, created_at. Filterable by status."""
     packages = load_applications()
     if not packages:
         console.print("[yellow]No applications yet. Run: nerajob apply --job-id <id>[/yellow]")
         raise typer.Exit()
-    table = Table(title=f"Applications ({len(packages)})")
+    
+    if status_filter:
+        if status_filter not in ApplicationPackage.VALID_STATUSES:
+            console.print(f"[red]Invalid status '{status_filter}'. Valid: {sorted(ApplicationPackage.VALID_STATUSES)}[/red]")
+            raise typer.Exit(code=1)
+        packages = [p for p in packages if p.status == status_filter]
+        if not packages:
+            console.print(f"[yellow]No applications with status '{status_filter}'[/yellow]")
+            raise typer.Exit()
+    
+    # Sort
+    if sort_by == "created":
+        packages.sort(key=lambda p: p.created_at, reverse=True)
+    elif sort_by == "status":
+        packages.sort(key=lambda p: p.status)
+    elif sort_by == "job_id":
+        packages.sort(key=lambda p: p.job_id)
+    else:
+        packages.sort(key=lambda p: p.updated_at, reverse=True)
+    
+    status_colors = {
+        "draft": "dim", "applied": "blue", "interview": "yellow",
+        "offer": "green", "rejected": "red", "accepted": "bold green"
+    }
+    
+    table = Table(title=f"Applications ({len(packages)})" + (f" [status={status_filter}]" if status_filter else ""))
     table.add_column("Job ID")
     table.add_column("Status")
     table.add_column("Created")
     table.add_column("Updated")
+    table.add_column("Notes")
     for pkg in packages:
-        table.add_row(pkg.job_id, pkg.status, pkg.created_at, pkg.updated_at)
+        color = status_colors.get(pkg.status, "")
+        table.add_row(
+            pkg.job_id,
+            f"[{color}]{pkg.status}[/{color}]" if color else pkg.status,
+            pkg.created_at,
+            pkg.updated_at,
+            (pkg.notes or "")[:40]
+        )
     console.print(table)
 
 
@@ -526,6 +592,69 @@ def app_status(
         console.print(f"[green]Status updated:[/green] {pkg.job_id} → {pkg.status}")
     else:
         console.print(f"{pkg.job_id}: {pkg.status}")
+
+
+@app_app.command("stats")
+def app_stats() -> None:
+    """Show application statistics by status with timeline."""
+    packages = load_applications()
+    if not packages:
+        console.print("[yellow]No applications yet. Run: nerajob apply --job-id <id>[/yellow]")
+        raise typer.Exit()
+    
+    # Count by status
+    from collections import Counter
+    counts = Counter(p.status for p in packages)
+    
+    # Summary table
+    status_order = ["draft", "applied", "interview", "offer", "rejected", "accepted"]
+    table = Table(title=f"Application Stats ({len(packages)} total)")
+    table.add_column("Status")
+    table.add_column("Count")
+    table.add_column("Bar")
+    
+    status_bars = {
+        "draft": "📝", "applied": "📤", "interview": "💬",
+        "offer": "🎯", "rejected": "❌", "accepted": "✅"
+    }
+    
+    for status in status_order:
+        count = counts.get(status, 0)
+        if count > 0:
+            bar = status_bars.get(status, "•") + " " + "█" * min(count, 20)
+            table.add_row(status, str(count), bar)
+    
+    console.print(table)
+    
+    # Timeline: most recent applications
+    recent = sorted(packages, key=lambda p: p.updated_at, reverse=True)[:5]
+    timeline = Table(title="Recent Activity")
+    timeline.add_column("When")
+    timeline.add_column("Job ID")
+    timeline.add_column("Status")
+    for p in recent:
+        timeline.add_row(p.updated_at, p.job_id, p.status)
+    console.print(timeline)
+    
+    # Funnel stats
+    funnel = Table(title="Conversion Funnel")
+    funnel.add_column("Stage")
+    funnel.add_column("Count")
+    funnel.add_column("Rate")
+    stages = [
+        ("Applied", counts.get("applied", 0) + counts.get("interview", 0) + counts.get("offer", 0) + counts.get("accepted", 0)),
+        ("Interview", counts.get("interview", 0) + counts.get("offer", 0) + counts.get("accepted", 0)),
+        ("Offer", counts.get("offer", 0) + counts.get("accepted", 0)),
+        ("Accepted", counts.get("accepted", 0)),
+    ]
+    prev = stages[0][1] if stages[0][1] > 0 else 1
+    for label, count in stages:
+        rate = f"{count / prev * 100:.0f}%" if prev > 0 else "N/A"
+        funnel.add_row(label, str(count), rate)
+        if count > 0:
+            prev = count
+    console.print(funnel)
+
 
 
 @app_app.command("stats")
