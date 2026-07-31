@@ -5,7 +5,6 @@ from nerajob.evaluation import precision_at_k
 from nerajob.match import rank_jobs
 from nerajob.models import JobPosting, Profile
 
-
 ROOT = Path(__file__).parent.parent
 
 

@@ -1,6 +1,7 @@
 """Tests for the Lever scraper."""
 from nerajob.scrapers.lever import LeverScraper
 
+
 def test_lever_scraper_filters_python_roles():
     jobs = LeverScraper().search(query="python", limit=10)
     assert jobs

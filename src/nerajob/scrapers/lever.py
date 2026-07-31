@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import hashlib
 import json
-from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
+from nerajob.config import http_timeout, user_agent
 from nerajob.models import JobPosting
 from nerajob.scrapers.base import BaseScraper
-from nerajob.config import http_timeout, user_agent
 
 
 class LeverScraper(BaseScraper):

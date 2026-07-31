@@ -2,9 +2,8 @@
 
 import json
 import subprocess as sp
-from pathlib import Path
-
 import sys
+from pathlib import Path
 
 from nerajob.match import match_score
 from nerajob.models import JobPosting, Profile

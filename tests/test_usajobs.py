@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-from nerajob.scrapers.usajobs import UsajobsScraper, _OFFLINE
+from nerajob.scrapers.usajobs import _OFFLINE, UsajobsScraper
 
 
 class TestUsajobsScraper:

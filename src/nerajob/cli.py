@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from pathlib import Path
 
 import typer
@@ -6,21 +7,25 @@ from rich.console import Console
 from rich.table import Table
 
 from nerajob import __version__
-from nerajob.match import SKILL_ALIASES, extract_skills_from_text
 from nerajob.apply.assistant import prepare_application
 from nerajob.cv.builder import write_cv_files
-from nerajob.match import DEFAULT_MATCH_WEIGHTS, MatchWeights
-from nerajob.models import JobPosting
+from nerajob.match import (
+    DEFAULT_MATCH_WEIGHTS,
+    SKILL_ALIASES,
+    MatchWeights,
+    extract_skills_from_text,
+)
+from nerajob.models import ApplicationPackage, JobPosting
 from nerajob.scrapers.registry import available_scrapers, get_scraper
-from nerajob.models import ApplicationPackage
 from nerajob.storage import (
     default_profile,
     get_job,
     load_applications,
     load_jobs,
     load_profile,
-    load_scan_preset, save_scan_preset,
+    load_scan_preset,
     save_profile,
+    save_scan_preset,
     upsert_jobs,
 )
 
@@ -411,7 +416,7 @@ def jobs_match(
 ) -> None:
     """Rank saved jobs against your profile (keyword skill match)."""
     from nerajob.match import match_score, rank_jobs
-    from nerajob.models import Profile, JobPosting
+    from nerajob.models import JobPosting, Profile
     from nerajob.storage import load_jobs, load_profile
 
     profile = None

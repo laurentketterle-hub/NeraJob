@@ -2,8 +2,8 @@ from unittest.mock import MagicMock, patch
 
 import httpx
 
-from nerajob.scrapers.registry import available_scrapers, get_scraper
 from nerajob.scrapers.jooble import JoobleScraper
+from nerajob.scrapers.registry import available_scrapers, get_scraper
 
 
 def test_jooble_registered() -> None:
