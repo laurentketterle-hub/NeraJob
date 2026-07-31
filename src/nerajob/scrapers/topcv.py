@@ -50,7 +50,7 @@ class _TopCVListingParser(HTMLParser):
 
     def handle_endtag(self, tag: str) -> None:
         if self._current is not None:
-            if tag == "div" and self._in_title:
+            if self._in_title and tag in ("h2", "h3", "a"):
                 self._current["title"] = self._text_buf.strip()
                 self._text_buf = ""
                 self._in_title = False
