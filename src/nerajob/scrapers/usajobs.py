@@ -433,3 +433,92 @@ class USAJobsScraper(BaseScraper):
             remote="remote" in location.lower(),
             raw={"query": query, "usajobs_id": raw_id},
         )
+
+
+# ── standalone CLI (for ad-hoc searches, inspired by PR#130 tracker CLI) ──
+
+
+def cli() -> None:
+    """CLI entry point for USAJOBS searches.
+
+    Usage:
+        python -m nerajob.scrapers.usajobs "python developer" --location "Remote" --limit 10
+        python -m nerajob.scrapers.usajobs --offline --list-fixtures
+
+    Environment variables:
+        NERAJOB_USAJOBS_API_KEY   USAJOBS API key (required for live mode)
+        NERAJOB_USAJOBS_EMAIL     Registered email (required for live mode)
+        NERAJOB_USAJOBS_OFFLINE   Set to 1 to force offline mode
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="USAJOBS federal job search (NeraJob scraper)",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="Bounty: https://github.com/mergeos-bounties/NeraJob/issues/8",
+    )
+    parser.add_argument(
+        "query",
+        nargs="?",
+        default="",
+        help="Search keyword (e.g. 'python', 'cybersecurity')",
+    )
+    parser.add_argument(
+        "--location", "-l",
+        default="",
+        help="Location filter (e.g. 'Remote', 'Washington, DC')",
+    )
+    parser.add_argument(
+        "--limit", "-n",
+        type=int,
+        default=20,
+        help="Max results (default: 20, max: 10000)",
+    )
+    parser.add_argument(
+        "--offline",
+        action="store_true",
+        help="Force offline mode (use bundled fixtures)",
+    )
+    parser.add_argument(
+        "--list-fixtures",
+        action="store_true",
+        help="List all bundled offline job fixtures and exit",
+    )
+
+    args = parser.parse_args()
+
+    scraper = USAJobsScraper()
+
+    if args.list_fixtures:
+        print(f"Bundled offline fixtures ({len(scraper.OFFLINE_JOBS)} jobs):\n")
+        for i, job in enumerate(scraper.OFFLINE_JOBS, 1):
+            print(f"  {i}. {job['title']}")
+            print(f"     {job['organization']} — {job['location']}")
+            print(f"     {job['salary']}")
+            print()
+        return
+
+    if args.offline:
+        os.environ["NERAJOB_USAJOBS_OFFLINE"] = "1"
+
+    print(f"Searching USAJOBS for: {args.query!r} (location={args.location!r}, limit={args.limit})")
+    print("-" * 60)
+
+    results = scraper.search(args.query, args.location, args.limit)
+
+    if not results:
+        print("No results found.")
+        return
+
+    for i, job in enumerate(results, 1):
+        print(f"{i}. {job.title}")
+        print(f"   {job.company} — {job.location}")
+        if job.salary:
+            print(f"   {job.salary}")
+        if job.url:
+            print(f"   {job.url}")
+        print()
+
+
+if __name__ == "__main__":
+    cli()
