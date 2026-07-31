@@ -4,6 +4,8 @@ import json
 import subprocess as sp
 from pathlib import Path
 
+import sys
+
 from nerajob.match import match_score
 from nerajob.models import JobPosting, Profile
 
@@ -47,7 +49,7 @@ def test_offline_match_with_files(tmp_path: Path) -> None:
 
     result = sp.run(
         [
-            "python",
+            sys.executable,
             "-m",
             "nerajob",
             "jobs",
