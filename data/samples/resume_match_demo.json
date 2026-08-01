@@ -1,0 +1,51 @@
+{
+  "full_name": "Alex Rivera",
+  "email": "alex@example.com",
+  "phone": "+1-555-0123",
+  "location": "Remote",
+  "headline": "Senior Python Backend Engineer",
+  "summary": "Senior backend engineer with 8+ years building scalable APIs, data pipelines, and cloud-native services.",
+  "skills": [
+    "Python",
+    "FastAPI",
+    "PostgreSQL",
+    "Docker",
+    "Kubernetes",
+    "AWS",
+    "Redis",
+    "gRPC",
+    "CI/CD",
+    "Terraform"
+  ],
+  "experience": [
+    {
+      "title": "Senior Backend Engineer",
+      "company": "CloudScale Inc.",
+      "start": "2022",
+      "end": "Present",
+      "highlights": [
+        "Built event-driven microservices handling 50k req/s",
+        "Migrated monolith to Kubernetes with zero downtime"
+      ]
+    },
+    {
+      "title": "Backend Developer",
+      "company": "DataFlow Technologies",
+      "start": "2018",
+      "end": "2022",
+      "highlights": [
+        "Designed REST APIs serving 2M daily users",
+        "Optimized PostgreSQL queries reducing latency by 60%"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "MIT",
+      "degree": "B.S. Computer Science",
+      "year": "2018"
+    }
+  ],
+  "links": ["https://github.com/alex-rivera", "https://linkedin.com/in/alex-rivera"],
+  "languages": ["English", "Spanish"]
+}
