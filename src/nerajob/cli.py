@@ -191,19 +191,31 @@ def scan_cmd(
         console.print("[yellow]No hits from live source; falling back to sample feed.[/yellow]")
         collected = get_scraper("sample").search(query=query, location=location, limit=limit)
 
-    # Dedupe across sources: prefer first occurrence, keep stable order
+    # ── Phase 1: URL-first dedup (prefer first occurrence) ──
     fetched_count = len(collected)
-    seen_keys: set[str] = set()
-    deduped: list[JobPosting] = []
+    seen_urls: set[str] = set()
+    url_deduped: list[JobPosting] = []
     for job in collected:
-        key = f"{job.title.strip().lower()}|{job.company.strip().lower()}|{job.url.strip().lower()}"
-        if key in seen_keys:
+        url_key = (job.url or "").strip().lower()
+        if url_key and url_key in seen_urls:
             continue
-        seen_keys.add(key)
+        if url_key:
+            seen_urls.add(url_key)
+        url_deduped.append(job)
+
+    # ── Phase 2: Title+Company dedup for remaining ──
+    seen_tc: set[str] = set()
+    deduped: list[JobPosting] = []
+    for job in url_deduped:
+        tc_key = f"{job.title.strip().lower()}|{job.company.strip().lower()}"
+        if tc_key in seen_tc:
+            continue
+        seen_tc.add(tc_key)
         deduped.append(job)
     collected = deduped
-    if fetched_count != len(collected):
-        console.print(f"[dim]Deduped[/dim] {fetched_count} fetched → {len(collected)} unique (dropped {fetched_count - len(collected)} duplicates)")
+    unique_count = len(collected)
+    if fetched_count != unique_count:
+        console.print(f"[dim]Deduped[/dim] {fetched_count} fetched → {unique_count} unique")
 
     if remote_only:
         collected = [
@@ -263,8 +275,10 @@ def scan_cmd(
             f"[dim]min-salary {min_salary}[/dim] {before_s} → {len(collected)} jobs (dropped {skipped} below threshold)"
         )
 
+    saved_count = len(collected)
     merged = upsert_jobs(collected)
-    table = Table(title=f"Jobs saved ({len(collected)} new/updated, {len(merged)} total)")
+    console.print(f"[bold green]Scan complete:[/bold green] {fetched_count} fetched, {unique_count} unique, {saved_count} saved")
+    table = Table(title=f"Jobs saved ({saved_count} new/updated, {len(merged)} total)")
     table.add_column("ID", style="dim")
     table.add_column("Source")
     table.add_column("Title")
