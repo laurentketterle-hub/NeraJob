@@ -376,9 +376,9 @@ def test_top_level_match_demo_ranks_senior_python_first() -> None:
     assert result.returncode == 0
     lines = result.stdout.splitlines()
     # The Senior Python Backend Engineer should appear before the Rust or Frontend roles
-    sr_py_line = next((i for i, l in enumerate(lines) if "Senior Python" in l), None)
-    rust_line = next((i for i, l in enumerate(lines) if "Rust" in l and "Systems" in l), None)
-    frontend_line = next((i for i, l in enumerate(lines) if "Frontend" in l), None)
+    sr_py_line = next((i for i, line in enumerate(lines) if "Senior Python" in line), None)
+    rust_line = next((i for i, line in enumerate(lines) if "Rust" in line and "Systems" in line), None)
+    frontend_line = next((i for i, line in enumerate(lines) if "Frontend" in line), None)
     assert sr_py_line is not None, "Should rank Senior Python job"
     if rust_line is not None:
         assert sr_py_line < rust_line, "Python role should rank above Rust role"

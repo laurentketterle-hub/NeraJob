@@ -141,7 +141,7 @@ def match_cmd(
     """
     import json as _json
 
-    from nerajob.match import match_score, rank_jobs
+    from nerajob.match import rank_jobs
     from nerajob.models import JobPosting, Profile
 
     # ---- resolve inputs ----
