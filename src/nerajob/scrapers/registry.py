@@ -18,6 +18,12 @@ from nerajob.scrapers.themuse import TheMuseScraper
 from nerajob.scrapers.usajobs import UsajobsScraper
 from nerajob.scrapers.weworkremotely import WeWorkRemotelyScraper
 
+from nerajob.scrapers.landingjobs import LandingjobsScraper
+from nerajob.scrapers.nodesk import NodeskScraper
+from nerajob.scrapers.jobspresso import JobspressoScraper
+from nerajob.scrapers.euremote import EuremoteScraper
+from nerajob.scrapers.wr_programming import WrProgrammingScraper
+
 
 def available_scrapers() -> dict[str, BaseScraper]:
     """
@@ -55,6 +61,11 @@ def available_scrapers() -> dict[str, BaseScraper]:
         FindworkScraper(),
         AdzunaScraper(),
         UsajobsScraper(),
+        LandingjobsScraper(),
+        NodeskScraper(),
+        JobspressoScraper(),
+        EuremoteScraper(),
+        WrProgrammingScraper(),
     ]
     return {s.name: s for s in scrapers}
 
