@@ -4,7 +4,6 @@ import os
 
 from nerajob.scrapers.adzuna import AdzunaScraper
 from nerajob.scrapers.arbeitnow import ArbeitnowScraper
-from nerajob.scrapers.usajobs import USAJobsScraper
 from nerajob.scrapers.ashby import AshbyScraper
 from nerajob.scrapers.base import BaseScraper
 from nerajob.scrapers.findwork import FindworkScraper
@@ -16,7 +15,8 @@ from nerajob.scrapers.remotive import RemotiveScraper
 from nerajob.scrapers.sample import SampleScraper
 from nerajob.scrapers.smartrecruiters import SmartRecruitersScraper
 from nerajob.scrapers.themuse import TheMuseScraper
-from nerajob.scrapers.usajobs import UsajobsScraper
+from nerajob.scrapers.topcv import TopCVScraper
+from nerajob.scrapers.vietnamworks import VietnamWorksScraper
 from nerajob.scrapers.weworkremotely import WeWorkRemotelyScraper
 
 
@@ -31,10 +31,6 @@ def available_scrapers() -> dict[str, BaseScraper]:
 
     Remotive: live public API; set NERAJOB_REMOTIVE_OFFLINE=1 to force offline samples.
     Arbeitnow: live public API; set NERAJOB_ARBEITNOW_OFFLINE=1 for offline samples.
-    USAJobs: live public API; requires NERAJOB_USAJOBS_API_KEY + NERAJOB_USAJOBS_EMAIL env vars.
-             Without credentials, returns deterministic offline fixtures.
-             Set NERAJOB_USAJOBS_OFFLINE=1 to force offline even with credentials.
-             API docs: https://developer.usajobs.gov/
     Jobicy: live public API; set NERAJOB_JOBICY_OFFLINE=1 for offline samples.
     We Work Remotely: RSS feed; set NERAJOB_WWR_OFFLINE=1 for offline samples.
     Smart Recruiters: set NERAJOB_SMARTRECRUITERS_COMPANIES to comma-separated company IDs.
@@ -50,7 +46,6 @@ def available_scrapers() -> dict[str, BaseScraper]:
         RemoteOKScraper(),
         RemotiveScraper(),
         ArbeitnowScraper(),
-        USAJobsScraper(),
         JobicyScraper(),
         JoobleScraper(),
         TheMuseScraper(),
@@ -60,7 +55,6 @@ def available_scrapers() -> dict[str, BaseScraper]:
         SmartRecruitersScraper(),
         FindworkScraper(),
         AdzunaScraper(),
-        UsajobsScraper(),
     ]
     return {s.name: s for s in scrapers}
 
