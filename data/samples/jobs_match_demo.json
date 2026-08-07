@@ -1,0 +1,74 @@
+[
+  {
+    "id": "match-demo-sr-py",
+    "source": "fixture",
+    "title": "Senior Python Backend Engineer",
+    "company": "Remote APIs Co",
+    "location": "Remote",
+    "url": "https://example.com/jobs/sr-python-backend",
+    "description": "Build and maintain FastAPI microservices backed by PostgreSQL and deployed via Docker on Kubernetes. Experience with AWS, Redis caching, and gRPC communication required.",
+    "tags": ["python", "fastapi", "postgresql", "docker", "kubernetes", "aws"],
+    "salary": "$130k-$165k",
+    "remote": true
+  },
+  {
+    "id": "match-demo-data-eng",
+    "source": "fixture",
+    "title": "Data Platform Engineer",
+    "company": "Data Flow Labs",
+    "location": "Hybrid - San Francisco",
+    "url": "https://example.com/jobs/data-platform",
+    "description": "Design and operate data pipelines with Python, SQL, Airflow on cloud infrastructure. Experience with dbt, Snowflake, and streaming systems preferred.",
+    "tags": ["python", "sql", "airflow", "cloud", "dbt"],
+    "salary": "$120k-$155k",
+    "remote": false
+  },
+  {
+    "id": "match-demo-frontend",
+    "source": "fixture",
+    "title": "Senior Frontend Engineer",
+    "company": "WebStudio Inc",
+    "location": "Remote",
+    "url": "https://example.com/jobs/sr-frontend",
+    "description": "Build responsive React applications with TypeScript. Experience with Next.js, TailwindCSS, and design systems.",
+    "tags": ["react", "typescript", "next.js", "css", "tailwind"],
+    "salary": "$110k-$140k",
+    "remote": true
+  },
+  {
+    "id": "match-demo-devops",
+    "source": "fixture",
+    "title": "DevOps / Platform Engineer",
+    "company": "CloudScale Inc.",
+    "location": "Remote",
+    "url": "https://example.com/jobs/devops-platform",
+    "description": "Manage Kubernetes clusters on AWS. Build CI/CD pipelines, Terraform IaC, and observability with Prometheus/Grafana.",
+    "tags": ["kubernetes", "terraform", "aws", "docker", "ci/cd", "prometheus", "grafana"],
+    "salary": "$125k-$160k",
+    "remote": true
+  },
+  {
+    "id": "match-demo-ml",
+    "source": "fixture",
+    "title": "Machine Learning Engineer",
+    "company": "AI Innovations",
+    "location": "Remote",
+    "url": "https://example.com/jobs/ml-engineer",
+    "description": "Build and deploy ML models at scale. Python, PyTorch, MLOps, and experience with distributed training systems.",
+    "tags": ["python", "pytorch", "mlops", "machine learning", "tensorflow"],
+    "salary": "$140k-$180k",
+    "remote": true
+  },
+  {
+    "id": "match-demo-rust",
+    "source": "fixture",
+    "title": "Systems Engineer (Rust)",
+    "company": "ZeroPoint Systems",
+    "location": "Remote",
+    "url": "https://example.com/jobs/systems-rust",
+    "description": "Build low-latency distributed systems in Rust. Experience with Tokio, gRPC, and performance optimization required.",
+    "tags": ["rust", "systems", "distributed", "performance"],
+    "salary": "$135k-$170k",
+    "remote": true
+  }
+]

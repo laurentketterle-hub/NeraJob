@@ -92,6 +92,185 @@ def gui_cmd() -> None:
     raise SystemExit(gui_main())
 
 
+@app.command("match")
+def match_cmd(
+    resume_file: Path | None = typer.Option(
+        None,
+        "--resume-file",
+        "-r",
+        exists=True,
+        readable=True,
+        help="Offline: profile JSON file (bypasses stored profile)",
+    ),
+    jobs_file: Path | None = typer.Option(
+        None,
+        "--jobs-file",
+        "-j",
+        exists=True,
+        readable=True,
+        help="Offline: jobs JSON array file (bypasses stored jobs DB)",
+    ),
+    top: int = typer.Option(10, "--top", "-k", min=1, max=100, help="Number of top matches to show"),
+    demo: bool = typer.Option(
+        False, "--demo", help="Run with bundled demo fixtures (resume + 6 jobs across roles)"
+    ),
+    skill_weight: float = typer.Option(
+        DEFAULT_MATCH_WEIGHTS.skills,
+        "--skill-weight",
+        min=0.0,
+        help="Maximum score contribution from profile skill matches",
+    ),
+    title_weight: float = typer.Option(
+        DEFAULT_MATCH_WEIGHTS.title,
+        "--title-weight",
+        min=0.0,
+        help="Maximum score contribution from headline/title overlap",
+    ),
+    location_weight: float = typer.Option(
+        DEFAULT_MATCH_WEIGHTS.location,
+        "--location-weight",
+        min=0.0,
+        help="Maximum score contribution from location or remote fit",
+    ),
+) -> None:
+    """Match your profile against jobs — offline file mode or demo mode.
+
+    Offline mode loads a resume JSON and a jobs JSON array without touching
+    the stored profile or jobs database. Use --demo to try it immediately with
+    bundled fixtures.
+
+    Examples:
+        nerajob match --demo
+        nerajob match --resume-file profile.json --jobs-file jobs.json --top 3
+        nerajob match --demo --skill-weight 80
+    """
+    import json as _json
+
+    from nerajob.match import rank_jobs
+    from nerajob.models import JobPosting, Profile
+
+    # ---- resolve inputs ----
+    profile: Profile
+    jobs: list[JobPosting]
+
+    if demo:
+        # Use bundled demo fixtures
+        samples_dir = Path(__file__).resolve().parent.parent.parent / "data" / "samples"
+        resume_path = samples_dir / "resume_match_demo.json"
+        jobs_path = samples_dir / "jobs_match_demo.json"
+        if not resume_path.exists():
+            console.print(f"[red]Demo resume fixture missing:[/red] {resume_path}")
+            raise typer.Exit(code=1)
+        if not jobs_path.exists():
+            console.print(f"[red]Demo jobs fixture missing:[/red] {jobs_path}")
+            raise typer.Exit(code=1)
+        resume_file = resume_path
+        jobs_file = jobs_path
+
+    if resume_file and jobs_file:
+        # ---- offline mode: file-based inputs ----
+        try:
+            profile_data = _json.loads(resume_file.read_text(encoding="utf-8"))
+            profile = Profile(**profile_data)
+        except (_json.JSONDecodeError, TypeError, ValueError) as exc:
+            console.print(f"[red]Invalid resume file ({resume_file}):[/red] {exc}")
+            raise typer.Exit(code=1) from exc
+
+        try:
+            jobs_data = _json.loads(jobs_file.read_text(encoding="utf-8"))
+            if not isinstance(jobs_data, list):
+                console.print(
+                    f"[red]Jobs file must be a JSON array, got {type(jobs_data).__name__}[/red]"
+                )
+                raise typer.Exit(code=1)
+            jobs = []
+            for idx, j in enumerate(jobs_data):
+                try:
+                    jobs.append(JobPosting(**j))
+                except (TypeError, ValueError) as exc:
+                    console.print(
+                        f"[yellow]Skipping job at index {idx}: {exc}[/yellow]"
+                    )
+        except _json.JSONDecodeError as exc:
+            console.print(f"[red]Invalid jobs file ({jobs_file}):[/red] {exc}")
+            raise typer.Exit(code=1) from exc
+
+        if not jobs:
+            console.print("[red]No valid jobs found in the jobs file.[/red]")
+            raise typer.Exit(code=1)
+
+        console.print(
+            f"[dim]Offline match: {len(jobs)} jobs × "
+            f"{len(profile.skills or [])} skills[/dim]"
+        )
+    elif not resume_file and not jobs_file:
+        # ---- fallback: use stored profile + jobs DB ----
+        profile = load_profile()
+        if not profile:
+            console.print("[red]No profile found. Run: nerajob profile init[/red]")
+            console.print(
+                "[dim]Or use offline mode: nerajob match --resume-file <file> "
+                "--jobs-file <file>[/dim]"
+            )
+            raise typer.Exit(code=1)
+        jobs = load_jobs()
+        if not jobs:
+            console.print("[yellow]No saved jobs. Run: nerajob scan --source sample[/yellow]")
+            console.print(
+                "[dim]Or try demo mode: nerajob match --demo[/dim]"
+            )
+            raise typer.Exit()
+    else:
+        console.print(
+            "[red]Both --resume-file AND --jobs-file are required for offline mode.[/red]"
+        )
+        console.print("[dim]To use stored profile + jobs DB, omit both flags.[/dim]")
+        console.print("[dim]To run with demo fixtures, use: nerajob match --demo[/dim]")
+        raise typer.Exit(code=1)
+
+    weights = MatchWeights(
+        skills=skill_weight,
+        title=title_weight,
+        location=location_weight,
+    )
+
+    ranked = rank_jobs(profile, jobs, top_k=top, weights=weights)
+
+    if not ranked:
+        console.print("[yellow]No jobs to rank — list is empty.[/yellow]")
+        raise typer.Exit()
+
+    # ---- render table with expanded details ----
+    table = Table(title=f"Job matches (top {len(ranked)})")
+    table.add_column("Score", style="cyan")
+    table.add_column("Band", style="bold")
+    table.add_column("Title")
+    table.add_column("Company")
+    table.add_column("Location")
+    table.add_column("Skill hits", style="green")
+    for row in ranked:
+        table.add_row(
+            f"{row['score']:.1f}",
+            str(row["band"]),
+            str(row["title"])[:50],
+            str(row["company"])[:24],
+            str(row.get("remote", False) and "Remote" or row.get("location", ""))[:20],
+            ", ".join(row["skill_hits"][:5]),
+        )
+    console.print(table)
+
+    # ---- summary footer ----
+    strong = sum(1 for r in ranked if r["band"] == "strong")
+    medium = sum(1 for r in ranked if r["band"] == "medium")
+    weak = sum(1 for r in ranked if r["band"] == "weak")
+    console.print(
+        f"[dim]Band breakdown:[/dim] "
+        f"[green]{strong} strong[/green] · "
+        f"[yellow]{medium} medium[/yellow] · "
+        f"[dim]{weak} weak[/dim]"
+    )
+
+
 @profile_app.command("init")
 def profile_init(force: bool = typer.Option(False, help="Overwrite existing profile")) -> None:
     existing = load_profile()
