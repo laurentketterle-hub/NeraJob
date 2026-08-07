@@ -1,9 +1,25 @@
 {
-  "remote_only": true,
-  "skill_filters": [
-    "python"
+  "name": "remote-only",
+  "description": "Default preset that enables --remote-only and filters for remote-friendly job titles",
+  "filters": {
+    "remote_only": true,
+    "locations": [],
+    "exclude_onsite": true
+  },
+  "skills": [
+    "python",
+    "typescript",
+    "react",
+    "golang",
+    "rust",
+    "aws"
   ],
-  "min_score": 30.0,
-  "min_salary": 0,
-  "max_results": 20
+  "max_results": 50,
+  "sources": [
+    "remoteok",
+    "weworkremotely",
+    "remotive",
+    "jobicy",
+    "findwork"
+  ]
 }
