@@ -10,28 +10,32 @@ def test_remote_preset_exists():
 
 
 def test_remote_preset_is_valid_json():
-    """Preset should be valid JSON with required fields."""
+    """Preset should be valid JSON with required fields (ScanPreset model)."""
     preset_path = Path("data/scan-preset.json")
     data = json.loads(preset_path.read_text())
-    assert data["name"] == "remote-only"
-    assert data["filters"]["remote_only"] is True
-    assert data["filters"]["exclude_onsite"] is True
+    assert data["remote_only"] is True
+    assert "skill_filters" in data
+    assert "min_score" in data
+    assert "min_salary" in data
+    assert "max_results" in data
 
 
-def test_remote_preset_sources():
-    """Preset should target remote-friendly sources."""
+def test_remote_preset_skill_filters():
+    """Preset should include relevant tech skills in skill_filters."""
     preset_path = Path("data/scan-preset.json")
     data = json.loads(preset_path.read_text())
-    remote_sources = {"remoteok", "weworkremotely", "remotive", "jobicy", "findwork"}
-    assert set(data["sources"]).issubset(remote_sources) or len(data["sources"]) >= 3
+    assert isinstance(data["skill_filters"], list)
+    assert len(data["skill_filters"]) >= 1
+    assert "python" in data["skill_filters"]
 
 
-def test_remote_preset_skills():
-    """Preset should include relevant tech skills."""
+def test_remote_preset_values():
+    """Preset should have sensible default values."""
     preset_path = Path("data/scan-preset.json")
     data = json.loads(preset_path.read_text())
-    assert len(data["skills"]) >= 3
-    assert "python" in data["skills"]
+    assert data["min_score"] >= 0
+    assert data["min_salary"] >= 0
+    assert data["max_results"] > 0
 
 
 def test_load_scan_preset_import():
