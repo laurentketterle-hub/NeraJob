@@ -73,7 +73,7 @@ class TestUsajobsScraper:
         scraper = UsajobsScraper()
         mock_response = MagicMock()
         mock_response.raise_for_status.side_effect = Exception("HTTP 500")
-        with patch.dict(os.environ, {"NERAJOB_USAJOBS_API_KEY": "fake-key-123"}, clear=False):
+        with patch.dict(os.environ, {"NERAJOB_USAJOBS_API_KEY": "fake-key-123", "NERAJOB_USAJOBS_EMAIL": "test@example.com"}, clear=False):
             with patch("nerajob.scrapers.usajobs.httpx.Client.get", return_value=mock_response):
                 results = scraper.search("Engineer", limit=2)
                 assert len(results) > 0
