@@ -6,22 +6,26 @@ from nerajob.scrapers.adzuna import AdzunaScraper
 from nerajob.scrapers.arbeitnow import ArbeitnowScraper
 from nerajob.scrapers.ashby import AshbyScraper
 from nerajob.scrapers.base import BaseScraper
+from nerajob.scrapers.euremote import EuremoteScraper
 from nerajob.scrapers.findwork import FindworkScraper
+from nerajob.scrapers.github_jobs import GitHubJobsScraper
+from nerajob.scrapers.greenhouse import GreenhouseScraper
 from nerajob.scrapers.jobicy import JobicyScraper
+from nerajob.scrapers.jobspresso import JobspressoScraper
 from nerajob.scrapers.jooble import JoobleScraper
+from nerajob.scrapers.landingjobs import LandingjobsScraper
 from nerajob.scrapers.lever import LeverScraper
+from nerajob.scrapers.nodesk import NodeskScraper
+from nerajob.scrapers.reed import ReedScraper
 from nerajob.scrapers.remoteok import RemoteOKScraper
 from nerajob.scrapers.remotive import RemotiveScraper
 from nerajob.scrapers.sample import SampleScraper
 from nerajob.scrapers.smartrecruiters import SmartRecruitersScraper
 from nerajob.scrapers.themuse import TheMuseScraper
-from nerajob.scrapers.usajobs import UsajobsScraper
+from nerajob.scrapers.topcv import TopCVScraper
+from nerajob.scrapers.usajobs import USAJobsScraper
+from nerajob.scrapers.vietnamworks import VietnamWorksScraper
 from nerajob.scrapers.weworkremotely import WeWorkRemotelyScraper
-
-from nerajob.scrapers.landingjobs import LandingjobsScraper
-from nerajob.scrapers.nodesk import NodeskScraper
-from nerajob.scrapers.jobspresso import JobspressoScraper
-from nerajob.scrapers.euremote import EuremoteScraper
 from nerajob.scrapers.wr_programming import WrProgrammingScraper
 
 
@@ -60,12 +64,17 @@ def available_scrapers() -> dict[str, BaseScraper]:
         SmartRecruitersScraper(),
         FindworkScraper(),
         AdzunaScraper(),
-        UsajobsScraper(),
+        USAJobsScraper(),
         LandingjobsScraper(),
         NodeskScraper(),
         JobspressoScraper(),
         EuremoteScraper(),
         WrProgrammingScraper(),
+        GreenhouseScraper(),
+        GitHubJobsScraper(),
+        ReedScraper(),
+        TopCVScraper(),
+        VietnamWorksScraper(),
     ]
     return {s.name: s for s in scrapers}
 
