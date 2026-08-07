@@ -435,6 +435,11 @@ class USAJobsScraper(BaseScraper):
         )
 
 
+# Compatibility aliases for tests
+_OFFLINE = USAJobsScraper.OFFLINE_JOBS
+UsajobsScraper = USAJobsScraper
+
+
 # ── standalone CLI (for ad-hoc searches, inspired by PR#130 tracker CLI) ──
 
 
