@@ -46,14 +46,15 @@ class RateLimiter:
 
     def __init__(self, min_interval_s: float = _RATE_LIMIT_FLOOR_S):
         self._min_interval = min_interval_s
-        self._last_call: float = 0.0
+        self._last_call: float | None = None
 
     def wait(self) -> None:
         """Block until the minimum interval has elapsed since the last call."""
         now = time.monotonic()
-        elapsed = now - self._last_call
-        if elapsed < self._min_interval:
-            time.sleep(self._min_interval - elapsed)
+        if self._last_call is not None:
+            elapsed = now - self._last_call
+            if elapsed < self._min_interval:
+                time.sleep(self._min_interval - elapsed)
         self._last_call = time.monotonic()
 
 

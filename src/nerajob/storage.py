@@ -91,12 +91,14 @@ def get_job(job_id: str) -> JobPosting | None:
 
 
 def load_scan_preset() -> ScanPreset:
-    return ScanPreset.model_validate(_read_json(SCAN_PRESET_PATH, {}))
+    from nerajob.config import SCAN_PRESET_PATH as _PATH
+    return ScanPreset.model_validate(_read_json(_PATH, {}))
 
 
 def save_scan_preset(preset: ScanPreset) -> Path:
-    _write_json(SCAN_PRESET_PATH, preset.model_dump())
-    return SCAN_PRESET_PATH
+    from nerajob.config import SCAN_PRESET_PATH as _PATH
+    _write_json(_PATH, preset.model_dump())
+    return _PATH
 
 
 def save_application(package: ApplicationPackage) -> Path:
