@@ -108,7 +108,7 @@ class USAJobsScraper(BaseScraper):
             "organization": "General Services Administration",
             "location": "Remote",
             "url": "https://www.usajobs.gov/job/45678901",
-            "snippet": "Build and maintain cloud-native platforms for federal digital services.",
+            "snippet": "Build and maintain cloud-native Python platforms for federal digital services.",
             "salary": "$86,962 - $135,987 per year",
         },
         {
@@ -255,6 +255,8 @@ class USAJobsScraper(BaseScraper):
 
     def _offline_search(self, query: str, location: str = "", limit: int = 20) -> list[JobPosting]:
         """Deterministic offline search against bundled fixtures."""
+        if limit <= 0:
+            return []
         query_lower = query.lower()
         results: list[JobPosting] = []
 

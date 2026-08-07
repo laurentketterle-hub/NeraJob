@@ -63,7 +63,7 @@ class TestUsajobsScraper:
     def test_live_api_graceful_fallback_on_connection_error(self):
         """When API key is set but network fails, fall back to offline."""
         scraper = UsajobsScraper()
-        with patch.dict(os.environ, {"NERAJOB_USAJOBS_API_KEY": "fake-key-123"}, clear=False):
+        with patch.dict(os.environ, {"NERAJOB_USAJOBS_API_KEY": "fake-key-123", "NERAJOB_USAJOBS_EMAIL": "test@example.com"}, clear=False):
             with patch("nerajob.scrapers.usajobs.httpx.Client.get", side_effect=Exception("Connection refused")):
                 results = scraper.search("python", limit=3)
                 assert len(results) > 0
