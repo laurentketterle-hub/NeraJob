@@ -15,7 +15,7 @@ from nerajob.scrapers.remotive import RemotiveScraper
 from nerajob.scrapers.sample import SampleScraper
 from nerajob.scrapers.smartrecruiters import SmartRecruitersScraper
 from nerajob.scrapers.themuse import TheMuseScraper
-from nerajob.scrapers.usajobs import UsajobsScraper
+from nerajob.scrapers.usajobs import USAJobsScraper
 from nerajob.scrapers.weworkremotely import WeWorkRemotelyScraper
 
 
@@ -39,6 +39,10 @@ def available_scrapers() -> dict[str, BaseScraper]:
     Adzuna: live public API; set ADZUNA_APP_ID + ADZUNA_APP_KEY env vars.
             Without credentials, returns deterministic offline fixtures.
             Set NERAJOB_ADZUNA_OFFLINE=1 to force offline even with credentials.
+    USAJOBS: official federal job board; set NERAJOB_USAJOBS_API_KEY +
+             NERAJOB_USAJOBS_EMAIL env vars to use live mode (free key at
+             developer.usajobs.gov). Without credentials, returns offline
+             fixtures. Set NERAJOB_USAJOBS_OFFLINE=1 to force offline.
     """
     scrapers: list[BaseScraper] = [
         SampleScraper(),
@@ -54,7 +58,7 @@ def available_scrapers() -> dict[str, BaseScraper]:
         SmartRecruitersScraper(),
         FindworkScraper(),
         AdzunaScraper(),
-        UsajobsScraper(),
+        USAJobsScraper(),
     ]
     return {s.name: s for s in scrapers}
 
